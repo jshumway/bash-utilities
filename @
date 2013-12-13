@@ -18,11 +18,11 @@ USAGE="@ <note>"
 
 # Configuration
 
-LOG_DIRECTORY="~/timelogs"
+LOG_DIRECTORY="$HOME/timelogs"
 USE_HOSTNAME=false
 
 # If you prefer to keep notes in dropbox...
-# LOG_DIRECTORY=~/Dropbox/timelogs
+# LOG_DIRECTORY="$HOME/Dropbox/timelogs"
 # USE_HOSTNAME=true
 
 DATE_FORMAT="+%Y-%e-%d-%A"

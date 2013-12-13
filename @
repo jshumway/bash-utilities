@@ -1,7 +1,5 @@
 #!/bin/bash
 
-USAGE="@ <note>"
-
 # A simple time tracking utility.
 #
 # Saves notes by date and time (and hostname, if desired) to log files
@@ -18,34 +16,80 @@ USAGE="@ <note>"
 
 # Configuration
 
-LOG_DIRECTORY="$HOME/timelogs"
+LOG_DIRECTORY="$HOME/.timelogs"
 USE_HOSTNAME=false
 
 # If you prefer to keep notes in dropbox...
-# LOG_DIRECTORY="$HOME/Dropbox/timelogs"
+# LOG_DIRECTORY="$HOME/Dropbox/.timelogs"
 # USE_HOSTNAME=true
 
-DATE_FORMAT="+%Y-%e-%d-%A"
+DATE_FORMAT="+%Y-%m-%d-%A"
 TIME_FORMAT="+%H:%M"
 
 # Script
 
-set -e
-
-if [[ $# -eq 0 ]]; then
-   echo $USAGE
+function usage {
+   echo "Usage: @ [-s [n]] | <note>"
+   echo "   -s [n]   show the last n days of notes (default 0)"
    exit 1
-fi
+}
 
 function lower {
    echo $* | tr '[:upper:]' '[:lower:]'
 }
 
+function save {
+   local ENTRY_NAME="$(date $TIME_FORMAT)"
+
+   echo $ENTRY_NAME: $* >> "$FILENAME"
+   echo note added.
+}
+
+function report {
+   for i in $(seq 0 $1); do
+      local FILENAME=$(lower $(date -j -v-${i}d $DATE_FORMAT))
+
+      echo ${FILENAME}:
+
+      if ! stat "$FILENAME" &> /dev/null; then
+         echo
+         continue
+      fi
+
+      cat "$FILENAME"
+      if [[ $i -ne $1 ]]; then echo; fi
+   done
+}
+
+set -e
+
+if [[ $# -eq 0 ]]; then
+   usage
+fi
+
+MODE=save
 FILENAME="$(lower $(date $DATE_FORMAT))"
-ENTRY_NAME="$(date $TIME_FORMAT)"
+
+while getopts ":s" OPT; do
+   case "$OPT" in
+      s)
+         if [[ $OPIND -eq $(($# - 2)) ]]; then
+            n=$((OPIND + 2))
+            S_ARG=${!n}
+            shift 1
+         else
+            S_ARG=0
+         fi
+         MODE=report
+         ;;
+      *)
+         usage
+         ;;
+   esac
+done
 
 if [[ $(lower $USE_HOSTNAME) = true ]]; then
-   ENTRY_NAME="$(lower $(hostname)) $ENTRY_NAME"
+   local ENTRY_NAME="$(lower $(hostname)) $ENTRY_NAME"
 fi
 
 if ! stat "$LOG_DIRECTORY" &> /dev/null; then
@@ -54,5 +98,11 @@ fi
 
 cd "$LOG_DIRECTORY"
 
-echo $ENTRY_NAME: $* >> "$FILENAME"
-echo note added.
+case $MODE in
+   save)
+      save "$*"
+      ;;
+   report)
+      report $S_ARG
+      ;;
+esac

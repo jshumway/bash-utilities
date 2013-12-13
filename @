@@ -18,7 +18,7 @@ USAGE="@ <note>"
 
 # Configuration
 
-LOG_DIRECTORY=~/timelogs
+LOG_DIRECTORY="~/timelogs"
 USE_HOSTNAME=false
 
 # If you prefer to keep notes in dropbox...
@@ -42,17 +42,17 @@ function lower {
 }
 
 FILENAME="$(lower $(date $DATE_FORMAT))"
-ENTRY_NAME=$(date $TIME_FORMAT)
+ENTRY_NAME="$(date $TIME_FORMAT)"
 
 if [[ $(lower $USE_HOSTNAME) = true ]]; then
    ENTRY_NAME="$(lower $(hostname)) $ENTRY_NAME"
 fi
 
-if ! stat $LOG_DIRECTORY &> /dev/null; then
-   mkdir -p $LOG_DIRECTORY
+if ! stat "$LOG_DIRECTORY" &> /dev/null; then
+   mkdir -p "$LOG_DIRECTORY"
 fi
 
-cd $LOG_DIRECTORY
+cd "$LOG_DIRECTORY"
 
-echo $ENTRY_NAME: $* >> $FILENAME
+echo $ENTRY_NAME: $* >> "$FILENAME"
 echo note added.

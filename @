@@ -1,0 +1,58 @@
+#!/bin/sh
+
+USAGE="@ <note>"
+
+# A simple time tracking utility.
+#
+# Saves notes by date and time (and hostname, if desired) to log files
+# that can be referred to later.
+#
+# Idea proudly stolen from jamesbritt of hackerne.ws
+#
+# example usage:
+# $ @ reading about SQL many-to-many tables
+# ...
+# $ @ PEP not working
+# ...
+# $ @ tracking down bug in user logout process
+
+# Configuration
+
+LOG_DIRECTORY=~/timelogs
+USE_HOSTNAME=false
+
+# If you prefer to keep notes in dropbox...
+# LOG_DIRECTORY=~/Dropbox/timelogs
+# USE_HOSTNAME=true
+
+DATE_FORMAT="+%Y-%e-%d-%A"
+TIME_FORMAT="+%H:%M"
+
+# Script
+
+set -e
+
+if [[ $# -eq 0 ]]; then
+   echo $USAGE
+   exit
+fi
+
+function lower {
+   echo $* | tr '[:upper:]' '[:lower:]'
+}
+
+FILENAME="$(lower $(date $DATE_FORMAT))"
+ENTRY_NAME=$(date $TIME_FORMAT)
+
+if $USE_HOSTNAME; then
+   ENTRY_NAME="$(lower $(hostname)) $ENTRY_NAME"
+fi
+
+if ! stat $LOG_DIRECTORY &> /dev/null; then
+   mkdir $LOG_DIRECTORY
+fi
+
+cd $LOG_DIRECTORY
+
+echo $ENTRY_NAME: $* >> $FILENAME
+echo note added.

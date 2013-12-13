@@ -34,7 +34,7 @@ set -e
 
 if [[ $# -eq 0 ]]; then
    echo $USAGE
-   exit
+   exit 1
 fi
 
 function lower {
@@ -44,7 +44,7 @@ function lower {
 FILENAME="$(lower $(date $DATE_FORMAT))"
 ENTRY_NAME=$(date $TIME_FORMAT)
 
-if $USE_HOSTNAME; then
+if [[ $(lower $USE_HOSTNAME) = true ]]; then
    ENTRY_NAME="$(lower $(hostname)) $ENTRY_NAME"
 fi
 

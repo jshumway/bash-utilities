@@ -49,7 +49,7 @@ if [[ $(lower $USE_HOSTNAME) = true ]]; then
 fi
 
 if ! stat $LOG_DIRECTORY &> /dev/null; then
-   mkdir $LOG_DIRECTORY
+   mkdir -p $LOG_DIRECTORY
 fi
 
 cd $LOG_DIRECTORY

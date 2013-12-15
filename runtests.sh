@@ -20,6 +20,8 @@ for f in $all_tests; do
          echo -n E
          failed_tests="$failed_tests $f"
       fi
+   else
+      echo -n S
    fi
 done
 

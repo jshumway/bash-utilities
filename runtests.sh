@@ -12,14 +12,14 @@ echo Running `wc -l <<< "$all_tests"` tests
 
 for f in $all_tests; do
    if ! grep $f <<< $blacklist > /dev/null; then
-       $f 2> /dev/null
-   fi
+      $f 2> /dev/null
 
-   if [ $? -eq 0 ]; then
-      echo -n .
-   else
-      echo -n E
-      failed_tests="$failed_tests $f"
+      if [ $? -eq 0 ]; then
+         echo -n .
+      else
+         echo -n E
+         failed_tests="$failed_tests $f"
+      fi
    fi
 done
 
